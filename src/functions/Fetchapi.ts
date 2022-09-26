@@ -1,37 +1,29 @@
-import { useEffect, useState } from "react";
-import { TApiResponse } from "../types/public.types";
-
-export const useApiPost = (url: string, body: object = {}, options: RequestInit = {}): TApiResponse => {
+import { useState } from "react";
+import { TPostApiResponse } from "../types/public.types";
+import axios, { AxiosError, AxiosRequestConfig } from "axios"
+const BackEndURL = "http://localhost:3700"
+export const useApiPost = (): TPostApiResponse => {
     const [status, setStatus] = useState<number>(0);
     const [statusText, setStatusText] = useState<string>('');
     const [data, setData] = useState<any>();
     const [error, setError] = useState<any>();
     const [loading, setLoading] = useState<boolean>(false);
-    const fetchOptions: RequestInit = !options ? {
-        method: "POST",
-        body: JSON.stringify(body),
-    } : {
-        ...options,
-        method: "POST",
-        body: JSON.stringify(body),
-    }
-    const PostAPIData = async (): Promise<void> => {
+    const postAPIData = async (path: string, body: object = {}, options: AxiosRequestConfig = {}): Promise<void> => {
         setLoading(true)
         try {
-            const apiResponse = await fetch(url, fetchOptions)
-            const json = await apiResponse.json();
-            setStatus(apiResponse.status)
-            setStatusText(apiResponse.statusText);
-            setData(json);
-        } catch (error) {
-            setError(error);
+            const axiosResponse = await axios.post(`${BackEndURL}${path}`, body, options)
+            setStatusText(axiosResponse.statusText);
+            setData(axiosResponse.data);
+            setStatus(axiosResponse.status || data.status)
+        } catch (error: AxiosError | any) {   
+            setStatus(error?.response?.data?.status || 500);
+            setError(error?.response?.data);
         }
         setLoading(false)
     }
-    useEffect(() => {
-        PostAPIData()
-    }, [])
+
     return {
+        postAPIData,
         status,
         statusText,
         data,

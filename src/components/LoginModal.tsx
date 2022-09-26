@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import { Dispatch, FC, SetStateAction, useState } from "react";
-import {useApiPost} from "../functions/Fetchapi";
+import {useApiPost} from "../functions/fetchApi";
 
 interface IProps {
     setShowLoginModal: Dispatch<SetStateAction<boolean>>
@@ -11,15 +11,20 @@ const LoginModalComponent: FC<IProps> = ({ setShowLoginModal }) => {
 
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const {postAPIData, status,error, statusText, data} = useApiPost()
     const resetForm = (): void => {
         setPassword("");
         setUsername("");
     }
     const LoginHandler = () => {
         console.log(username, password);
-        const response = useApiPost("http://localhost:3700/auth/login", { username, password }, {})
-        console.log(response);
-        resetForm()
+        postAPIData("/auth/login", {username, password})
+        if(error){
+            alert(error.message)
+        }else{
+            console.log(data);
+            resetForm()
+        }
     }
 
     return (

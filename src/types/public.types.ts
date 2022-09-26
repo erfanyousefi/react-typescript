@@ -5,3 +5,6 @@ export type TApiResponse = {
     error: any;
     loading: boolean;
 }
+export type TPostApiResponse = TApiResponse & {
+    postAPIData: Function
+}

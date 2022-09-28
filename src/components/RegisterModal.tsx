@@ -2,22 +2,30 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import { Dispatch, FC, SetStateAction, useState } from "react";
+import {useApiPost} from "../functions/fetchApi";
 interface IProps {
     setShowRegisterModal: Dispatch<SetStateAction<boolean>>
 }
 const RegisterModalComponent: FC<IProps> = ({setShowRegisterModal}) => {
-    const [fullName, setFullName] = useState<string>("");
+    const [fullname, setFullname] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const {postAPIData, status,error, data} = useApiPost()
     const resetForm = (): void => {
-        setFullName("");
+        setFullname("");
         setPassword("");
         setUsername("");
     }
     const RegisterHandler = () => {
-        console.log(fullName, username, password);
-        resetForm();
-        setShowRegisterModal(false);
+        console.log(fullname, username, password);
+        postAPIData("/auth/register", {username, password, fullname});
+        console.log(status);
+        console.log(data);
+        console.log(error);
+        if(status === 200){
+            resetForm()
+        }
+        
     }
     return (
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -40,8 +48,8 @@ const RegisterModalComponent: FC<IProps> = ({setShowRegisterModal}) => {
                                             <div>
                                                 <div className="flex flex-col items-start">
                                                     <input type="text" name="fullname" placeholder="full Name"
-                                                        value={fullName}
-                                                        onChange={(event) => setFullName(event.target.value)}
+                                                        value={fullname}
+                                                        onChange={(event) => setFullname(event.target.value)}
                                                         className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                                     />
                                                 </div>

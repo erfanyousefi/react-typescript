@@ -2,7 +2,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
-import {useApiPost} from "../functions/fetchApi";
+import { useApiPost } from "../functions/fetchApi";
+import { useCookies } from "react-cookie";
+import { COOKIE_NAMES } from "../enums/public.enums";
 
 interface IProps {
     setShowLoginModal: Dispatch<SetStateAction<boolean>>
@@ -11,23 +13,25 @@ const LoginModalComponent: FC<IProps> = ({ setShowLoginModal }) => {
 
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const {postAPIData, status,error, data} = useApiPost()
+    const { postAPIData, data } = useApiPost();
+    const [cookies, setCookie, removeCookie] = useCookies([COOKIE_NAMES.ACCESS_TOKEN, COOKIE_NAMES.USER])
     const resetForm = (): void => {
         setPassword("");
         setUsername("");
     }
-    const LoginHandler = async () => {
-        console.log(username, password);
-        await postAPIData("/auth/login", {username, password})
-        console.log(status);
-        if(error){
-            alert(error.message)
-        }else{
-            console.log(data);
+    const LoginHandler = () => {
+        postAPIData("/auth/login", { username, password })
+    }
+    useEffect(() => {
+        if (data) {
+            setShowLoginModal(false)
+            const { data: { user } } = data;
+            setCookie(COOKIE_NAMES.USER, user)
+            setCookie(COOKIE_NAMES.ACCESS_TOKEN, user?.accessToken)
+            alert("Your LogedIn Successfuly!")
             resetForm()
         }
-    }
-
+    }, [data])
     return (
         <div className="fixed inset-0 z-10 overflow-y-auto">
             <div

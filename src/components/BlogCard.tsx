@@ -8,7 +8,7 @@ const BlogCardComponent: FC<PropsBlog> = ({ blog }) => {
             <div className="w-full shadow-md lg:max-w-sm p-2">
                 <img
                     className="object-cover w-full h-48"
-                    src={blog.image}
+                    src="https://picsum.photos/536/354"
                     alt="image"
                 />
                 <div className="p-4">
